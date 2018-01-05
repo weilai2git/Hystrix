@@ -29,7 +29,7 @@ public class RealCollapserTimer implements CollapserTimer {
 
     @Override
     public Reference<TimerListener> addListener(TimerListener collapseTask) {
-        return timer.addTimerListener(collapseTask);
+        return timer.addTimerListenerAtOnce(collapseTask);
     }
 
 }

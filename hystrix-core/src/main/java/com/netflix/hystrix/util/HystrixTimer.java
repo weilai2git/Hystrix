@@ -106,6 +106,28 @@ public class HystrixTimer {
         ScheduledFuture<?> f = executor.get().getThreadPool().scheduleAtFixedRate(r, listener.getIntervalTimeInMilliseconds(), listener.getIntervalTimeInMilliseconds(), TimeUnit.MILLISECONDS);
         return new TimerReference(listener, f);
     }
+    
+    public Reference<TimerListener> addTimerListenerAtOnce(final TimerListener listener) {
+        startThreadIfNeeded();
+        // add the listener
+
+        Runnable r = new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    listener.tick();
+                } catch (Exception e) {
+                    logger.error("Failed while ticking TimerListener", e);
+                }
+            }
+        };
+
+        ScheduledFuture<?> f = executor.get().getThreadPool().schedule(r, listener.getIntervalTimeInMilliseconds(), TimeUnit.MILLISECONDS);
+        return new TimerReference(listener, f);
+    }
+    
+    
 
     private static class TimerReference extends SoftReference<TimerListener> {
 
